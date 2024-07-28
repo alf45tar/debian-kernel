@@ -30,4 +30,5 @@ jobs:
 
     - name: Run Build
       run: |
+        chmod 755 ./crossbuild.sh
         ./crossbuild.sh
