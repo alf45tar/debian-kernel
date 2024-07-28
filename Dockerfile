@@ -28,9 +28,10 @@ git clone -n https://salsa.debian.org/kernel-team/linux.git debian-kernel
 cd debian-kernel
 git checkout bookworm
 cd ..
+EOF
 
 FROM clone-git AS crossbuild-script
-COPY <<"EOF" crossbuild
+COPY <<"EOF" ./crossbuild
 # This triplet is defined in
 # https://salsa.debian.org/kernel-team/linux/tree/master/debian/config/armhf/
 ARCH=armhf
@@ -70,7 +71,6 @@ fakeroot make -f debian/rules.gen binary-arch_${ARCH}_${FEATURESET}_${FLAVOUR}
 
 cd ..
 EOF
-
 
 FROM crossbuild-script as builder
 RUN <<"EOF"
