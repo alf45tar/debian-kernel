@@ -13,8 +13,7 @@ EOF
 FROM deb-src AS install-dependency
 RUN <<"EOF"
 apt-get update
-apt-get install fakeroot git kernel-wedge quilt ccache flex bison libssl-dev dh-exec rsync libelf-dev bc crossbuild-essential-armhf python3-jinja2 libncurses-dev
-apt-get build-dep linux -y
+apt-get install -y wget fakeroot git kernel-wedge quilt ccache flex bison libssl-dev dh-exec rsync libelf-dev bc crossbuild-essential-armhf python3-jinja2 libncurses-dev
 EOF
 
 FROM install-dependency AS download-kernel
