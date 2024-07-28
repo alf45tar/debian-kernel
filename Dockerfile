@@ -1,4 +1,4 @@
-FROM debian:12.1 AS deb-src
+FROM debian:bookworm AS deb-src
 COPY <<"EOF" /etc/apt/sources.list
 deb http://deb.debian.org/debian bookworm main
 deb-src http://deb.debian.org/debian bookworm main
