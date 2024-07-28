@@ -1,0 +1,17 @@
+name: kernel_build
+  on:
+  push jobs:
+    kernel:
+      runs-on: ubuntu-latest
+
+  steps:
+    - uses: actions/checkout@v3
+    - name: install dependencies
+        run:  sudo apt install fakeroot git kernel-wedge quilt ccache flex bison libssl-dev dh-exec rsync libelf-dev bc crossbuild-essential-armhf python3-jinja2 libncurses-dev
+    - name: get kernel
+        run:  wget https://deb.debian.org/debian/pool/main/l/linux/linux_6.1.99.orig.tar.xz
+    - name: clone git repo
+        run:  git clone -n https://salsa.debian.org/kernel-team/linux.git debian-kernel
+              cd debian-kernel
+              git checkout bookworm
+              cd ..
