@@ -15,7 +15,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt install -y fakeroot git kernel-wedge quilt ccache flex bison libssl-dev dh-exec rsync libelf-dev bc crossbuild-essential-armhf=12.9ubuntu3 python3-jinja2 libncurses-dev
+        sudo apt install -y fakeroot git kernel-wedge quilt ccache flex bison libssl-dev dh-exec rsync libelf-dev bc cpp-12-arm-linux-gnueabihf crossbuild-essential-armhf=12.9ubuntu3 python3-jinja2 libncurses-dev
 
     - name: Get kernel
       run: |
