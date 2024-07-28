@@ -31,7 +31,8 @@ jobs:
       - name: Retrieve artifact from Docker image
         run: |
           docker run -it --name kernel -d kernel-ix4-300d:latest
-          docker cp kernel:/linux-*.deb ${{ github.workspace }}          
+          HOME_DIR=$(docker exec kernel sh -c 'echo $HOME')
+          docker cp kernel:$HOME_DIR/linux-*.deb ${{ github.workspace }}          
 
       - uses: actions/upload-artifact@v4
         with:
