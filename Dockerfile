@@ -13,44 +13,67 @@ EOF
 FROM deb-src AS install-dependency
 RUN <<"EOF"
 apt-get update
-apt-get install build-essential wget git -y
+apt-get install fakeroot git kernel-wedge quilt ccache flex bison libssl-dev dh-exec rsync libelf-dev bc crossbuild-essential-armhf python3-jinja2 libncurses-dev
 apt-get build-dep linux -y
 EOF
 
-FROM install-dependency AS download-boot
+FROM install-dependency AS download-kernel
 RUN <<"EOF"
-cd /
-mkdir debian_config
-cd debian_config
-wget http://security.debian.org/debian-security/pool/updates/main/l/linux-signed-amd64/linux-image-6.1.0-12-cloud-amd64_6.1.52-1_amd64.deb -q -O kernel.deb
-ar -x kernel.deb
-tar xf data.tar.xz
+wget https://deb.debian.org/debian/pool/main/l/linux/linux_6.1.99.orig.tar.xz
 EOF
 
-FROM download-boot as builder
+FROM download-kernel AS clone-git
 RUN <<"EOF"
-cp /debian_config/boot/config-6.1.0-12-cloud-amd64 .config
-export BRANCH=`git rev-parse --abbrev-ref HEAD | sed s/-/+/g`
-export SHA1=`git rev-parse --short HEAD`
-export LOCALVERSION=+${BRANCH}+${SHA1}+GCE
-export GCE_PKG_DIR=${PWD}/gce/${LOCALVERSION}/pkg
-export GCE_INSTALL_DIR=${PWD}/gce/${LOCALVERSION}/install
-export GCE_BUILD_DIR=${PWD}/gce/${LOCALVERSION}/build
-export KERNEL_PKG=kernel-${LOCALVERSION}.tar.gz2
-export MAKE_OPTS="-j`nproc` \
-           LOCALVERSION=${LOCALVERSION} \
-           EXTRAVERSION="" \
-           INSTALL_PATH=${GCE_INSTALL_DIR}/boot \
-           INSTALL_MOD_PATH=${GCE_INSTALL_DIR}"
-mkdir -p ${GCE_BUILD_DIR}
-mkdir -p ${GCE_INSTALL_DIR}/boot
-mkdir -p ${GCE_PKG_DIR}
-make olddefconfig
-make ${MAKE_OPTS} prepare
-make ${MAKE_OPTS}
-make ${MAKE_OPTS} modules
-make ${MAKE_OPTS} install
-make ${MAKE_OPTS} modules_install
-cd ${GCE_INSTALL_DIR}
-tar -cvzf /kernel.tar.gz2 boot/* lib/modules/* --owner=0 --group=0
+git clone -n https://salsa.debian.org/kernel-team/linux.git debian-kernel
+cd debian-kernel
+git checkout bookworm
+cd ..
+
+FROM clone-git AS crossbuild-script
+COPY <<"EOF" crossbuild
+# This triplet is defined in
+# https://salsa.debian.org/kernel-team/linux/tree/master/debian/config/armhf/
+ARCH=armhf
+FEATURESET=none
+FLAVOUR=armmp-lpae
+
+cd debian-kernel
+
+export $(dpkg-architecture -a$ARCH)
+export PATH=/usr/lib/ccache:$PATH
+# Build profiles is from: https://salsa.debian.org/kernel-team/linux/blob/master/debian/README.source
+export DEB_BUILD_PROFILES="cross nopython nodoc pkg.linux.notools"
+# Enable build in parallel
+export MAKEFLAGS="-j$(($(nproc)*2))"
+# Disable -dbg (debug) package is only possible when distribution="UNRELEASED" in debian/changelog
+export DEBIAN_KERNEL_DISABLE_DEBUG=
+[ "$(dpkg-parsechangelog --show-field Distribution)" = "UNRELEASED" ] &&
+  export DEBIAN_KERNEL_DISABLE_DEBUG=yes
+
+# Remove any compiled binaries, temporary files, and other generated artifacts, preparing the directory for a fresh build.
+fakeroot make -f debian/rules clean
+
+# Unpack the original tarball ../linux_X.Y.Z.orig.tar.xz) in ../orig
+fakeroot make -f debian/rules orig
+
+# Add the missing config for enable leds
+echo "CONFIG_GPIO_74X164=m" >> debian/config/config
+
+fakeroot make -f debian/rules source
+
+# Setup the build environment for a particular architecture, feature set, and flavour. 
+fakeroot make -f debian/rules.gen setup_${ARCH}_${FEATURESET}_${FLAVOUR}
+
+# Builds the architecture-specific binary package for the specified architecture, feature set, and flavour.
+# It compiles the source code into binaries and packages them into a Debian package file.
+fakeroot make -f debian/rules.gen binary-arch_${ARCH}_${FEATURESET}_${FLAVOUR}
+
+cd ..
+EOF
+
+
+FROM crossbuild-script as builder
+RUN <<"EOF"
+chmod 755 ./crossbuild
+./crossbuild
 EOF
