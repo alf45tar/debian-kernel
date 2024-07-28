@@ -30,4 +30,4 @@ jobs:
 
     - name: Run Build
       run: |
-        crossbuild.sh
+        ./crossbuild.sh
