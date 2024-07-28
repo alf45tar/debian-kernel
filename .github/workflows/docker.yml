@@ -1,5 +1,3 @@
-# This is a basic workflow to help you get started with Actions
-
 name: Compile Linux Kernel
 
 # Controls when the workflow will run
@@ -21,16 +19,16 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      - name: build docker image
+      - name: Build Docker image
         run: |
           docker build -t kernel-ix4-300d .          
 
-      - name: retrieve artifact from docker image
+      - name: Retrieve artifact from Docker image
         run: |
           docker run -it --name kernel -d kernel-ix4-300d:latest
-          docker cp kernel:/kernel.tar.gz2 ${{ github.workspace }}          
+          docker cp kernel:/linux-*.deb ${{ github.workspace }}          
 
       - uses: actions/upload-artifact@v3
         with:
           name: kernel
-          path: ${{ github.workspace }}/kernel.tar.gz2
+          path: ${{ github.workspace }}/linux-*.deb
