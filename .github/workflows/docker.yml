@@ -28,7 +28,7 @@ jobs:
           docker run -it --name kernel -d kernel-ix4-300d:latest
           docker cp kernel:/linux-*.deb ${{ github.workspace }}          
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: kernel
           path: ${{ github.workspace }}/linux-*.deb
