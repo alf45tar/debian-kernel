@@ -29,7 +29,6 @@ EOF
 
 FROM download-boot as builder
 RUN <<"EOF"
-cd /bbr
 cp /debian_config/boot/config-6.1.0-12-cloud-amd64 .config
 export BRANCH=`git rev-parse --abbrev-ref HEAD | sed s/-/+/g`
 export SHA1=`git rev-parse --short HEAD`
