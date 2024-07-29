@@ -18,6 +18,7 @@ EOF
 
 FROM install-dependency AS download-kernel
 RUN <<"EOF"
+cd /root
 wget https://deb.debian.org/debian/pool/main/l/linux/linux_6.1.99.orig.tar.xz
 EOF
 
@@ -30,14 +31,14 @@ cd ..
 EOF
 
 FROM clone-git AS crossbuild-script
-COPY <<"EOF" ./crossbuild
+COPY <<"EOF" /root/crossbuild
 # This triplet is defined in
 # https://salsa.debian.org/kernel-team/linux/tree/master/debian/config/armhf/
 ARCH=armhf
 FEATURESET=none
 FLAVOUR=armmp-lpae
 
-cd debian-kernel
+cd /root/debian-kernel
 
 export $(dpkg-architecture -a$ARCH)
 export PATH=/usr/lib/ccache:$PATH
@@ -73,6 +74,6 @@ EOF
 
 FROM crossbuild-script as builder
 RUN <<"EOF"
-chmod 755 ./crossbuild
-./crossbuild
+chmod 755 /root/crossbuild
+/root/crossbuild
 EOF
