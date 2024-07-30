@@ -32,6 +32,8 @@ EOF
 
 FROM clone-git AS crossbuild-script
 COPY <<"EOF" /root/crossbuild
+#!/bin/bash
+
 # This triplet is defined in
 # https://salsa.debian.org/kernel-team/linux/tree/master/debian/config/armhf/
 ARCH=armhf
