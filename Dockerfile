@@ -24,10 +24,10 @@ EOF
 
 FROM download-kernel AS clone-git
 RUN <<"EOF"
+cd /root
 git clone -n https://salsa.debian.org/kernel-team/linux.git debian-kernel
 cd debian-kernel
 git checkout bookworm
-cd ..
 EOF
 
 FROM clone-git AS crossbuild-script
@@ -70,7 +70,5 @@ fakeroot make -f debian/rules.gen setup_${ARCH}_${FEATURESET}_${FLAVOUR}
 # Builds the architecture-specific binary package for the specified architecture, feature set, and flavour.
 # It compiles the source code into binaries and packages them into a Debian package file.
 fakeroot make -f debian/rules.gen binary-arch_${ARCH}_${FEATURESET}_${FLAVOUR}
-
-cd ..
 EOF
 RUN chmod 755 /root/crossbuild
