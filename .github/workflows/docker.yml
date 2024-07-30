@@ -26,12 +26,16 @@ jobs:
       
       - name: Build Docker image
         run: |
-          docker build -t kernel-ix4-300d .          
+          docker build -t bookworm .
+
+      - name: Compile kernel
+        run: |
+          docker run -it --name kernel-ix4-300d -d bookworm:latest
+          docker exec kernel-ix4-300d /root/crossbuild          
 
       - name: Retrieve artifact from Docker image
         run: |
-          docker run -it --name kernel -d kernel-ix4-300d:latest
-          HOME_DIR=$(docker exec kernel sh -c 'echo $HOME')
+          HOME_DIR=$(docker exec kernel-ix4-300d sh -c 'echo $HOME')
           docker cp kernel:$HOME_DIR/linux-*.deb ${{ github.workspace }}          
 
       - uses: actions/upload-artifact@v4
