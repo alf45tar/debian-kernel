@@ -13,7 +13,7 @@ EOF
 FROM deb-src AS install-dependency
 RUN <<"EOF"
 apt-get update
-apt-get install -y openssh-server wget fakeroot git kernel-wedge quilt ccache flex bison libssl-dev dh-exec rsync libelf-dev bc crossbuild-essential-armhf python3-jinja2 libncurses-dev
+apt-get install -y wget fakeroot git kernel-wedge quilt ccache flex bison libssl-dev dh-exec rsync libelf-dev bc crossbuild-essential-armhf python3-jinja2 libncurses-dev
 EOF
 
 FROM install-dependency AS download-kernel
@@ -72,11 +72,8 @@ fakeroot make -f debian/rules.gen binary-arch_${ARCH}_${FEATURESET}_${FLAVOUR}
 cd ..
 EOF
 
-FROM crossbuild-script as ssh
+FROM crossbuild-script as builder
 RUN <<"EOF"
-mkdir /var/run/sshd
-echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config
-echo 'root:password' | chpasswd
+chmod 755 /root/crossbuild
+/root/crossbuild
 EOF
-EXPOSE 22
-CMD ["/usr/sbin/sshd", "-D"]
