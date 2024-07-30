@@ -32,6 +32,8 @@ jobs:
         run: |
           docker run -it --name kernel-ix4-300d -d bookworm:latest
           sleep 5
+          docker exec kernel-ix4-300d ls -l /root/crossbuild
+          docker exec kernel-ix4-300d cat /root/crossbuild
           docker exec kernel-ix4-300d /root/crossbuild          
 
       - name: Retrieve artifact from Docker image
