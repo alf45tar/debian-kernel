@@ -71,9 +71,4 @@ fakeroot make -f debian/rules.gen binary-arch_${ARCH}_${FEATURESET}_${FLAVOUR}
 
 cd ..
 EOF
-
-FROM crossbuild-script as builder
-RUN <<"EOF"
-chmod 755 /root/crossbuild
-/root/crossbuild
-EOF
+RUN chmod 755 /root/crossbuild
