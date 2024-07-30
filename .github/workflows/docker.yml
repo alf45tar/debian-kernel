@@ -31,6 +31,7 @@ jobs:
       - name: Compile kernel
         run: |
           docker run -it --name kernel-ix4-300d -d bookworm:latest
+          until [ "$(docker inspect -f {{.State.Running}} kernel-ix4-300d)" == "true" ]; do sleep 1 done
           docker exec kernel-ix4-300d /root/crossbuild          
 
       - name: Retrieve artifact from Docker image
