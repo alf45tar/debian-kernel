@@ -27,12 +27,12 @@ jobs:
         run: |
           docker run -it --name kernel-ix4-300d -d bookworm:latest
           sleep 5
-          docker exec kernel-ix4-300d /root/crossbuild          
+          docker exec kernel-ix4-300d /root/crossbuild
 
       - name: Retrieve artifact from Docker image
         run: |
-          HOME_DIR=$(docker exec kernel-ix4-300d sh -c 'echo $HOME')
-          docker cp kernel-ix4-300d:$HOME_DIR/linux-*.deb ${{ github.workspace }}          
+          docker exec kernel-ix4-300d ls -la /root 
+          docker cp kernel-ix4-300d:/root/linux-*.deb ${{ github.workspace }}          
 
       - uses: actions/upload-artifact@v4
         with:
