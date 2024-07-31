@@ -62,6 +62,10 @@ fakeroot make -f debian/rules orig
 # Add the missing config for enable leds
 echo "CONFIG_GPIO_74X164=m" >> debian/config/config
 
+# Patch the kernel
+patch -p1 < ../0001-ledtrig-sata-mv.patch
+
+# Prepare the source package for a Debian package
 fakeroot make -f debian/rules source
 
 # Setup the build environment for a particular architecture, feature set, and flavour. 
