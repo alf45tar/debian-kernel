@@ -33,7 +33,7 @@ jobs:
         run: |
           docker exec kernel-ix4-300d ls -la /root
           for file in $(docker exec kernel-ix4-300d sh -c 'ls /root/linux-*.deb'); do
-            docker cp kernel-ix4-300d:/root/$file ${{ github.workspace }}
+            docker cp kernel-ix4-300d:$file ${{ github.workspace }}
           done
 
       - uses: actions/upload-artifact@v4
