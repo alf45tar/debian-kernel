@@ -20,6 +20,7 @@ FROM install-dependency AS download-kernel
 RUN <<"EOF"
 cd /root
 wget https://deb.debian.org/debian/pool/main/l/linux/linux_6.1.99.orig.tar.xz
+wget https://raw.githubusercontent.com/alf45tar/debian-kernel/main/0001-ledtrig-sata-mv.patch
 EOF
 
 FROM download-kernel AS clone-git
