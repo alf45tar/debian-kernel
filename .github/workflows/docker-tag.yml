@@ -4,7 +4,12 @@ name: Compile Linux Kernel
 on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
+    inputs:
+      tag:
+        description: "Kernel version"
+        required: true
+        default: '6.1.99-1'
+        
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -32,11 +37,30 @@ jobs:
       - name: Retrieve artifact from Docker image
         run: |
           docker exec kernel-ix4-300d ls -la /root
+          mkdir ${{ github.workspace }}/${{ github.event.inputs.tag }}
           for file in $(docker exec kernel-ix4-300d sh -c 'ls /root/linux-*.deb'); do
-            docker cp kernel-ix4-300d:$file ${{ github.workspace }}
+            docker cp kernel-ix4-300d:$file ${{ github.workspace }}/${{ github.event.inputs.tag }}
           done
+
+      - name: Commit and push kernel ${{ github.event.inputs.tag }} files
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "Release kernel ${{ github.event.inputs.tag }}"
+          git push origin HEAD:master
+          git tag ${{ github.event.inputs.tag }}
+          git push --tags
+
+      - name: Create release ${{ github.event.inputs.tag }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/upload-artifact@v4
         with:
           name: lenovo-ix4-300d-debian-bookworm-kernel
-          path: ${{ github.workspace }}/linux-*.deb
+          path: ${{ github.workspace }}/${{ github.event.inputs.tag }}/linux-*.deb
+
