@@ -25,14 +25,11 @@ fakeroot make -f debian/rules clean
 # Unpack the original tarball ../linux_X.Y.Z.orig.tar.xz) in ../orig
 fakeroot make -f debian/rules orig
 
-# Add the missing config for enable leds
-echo "CONFIG_GPIO_74X164=m" >> debian/config/config
+# Add the missing config for enable leds and disable debug
+../configure_kernel_options.sh
 
 # Patch the kernel
 patch -p1 < ../0001-ledtrig-sata-mv.patch
-
-# Disable debug info
-../disable_debug_info.sh
 
 # Prepare the source package for a Debian package
 fakeroot make -f debian/rules source
