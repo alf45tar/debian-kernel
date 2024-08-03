@@ -21,8 +21,10 @@ RUN <<"EOF"
 cd /root
 wget https://raw.githubusercontent.com/alf45tar/debian-kernel/main/download_latest_bookworm_stable_sec_kernel.sh
 wget https://raw.githubusercontent.com/alf45tar/debian-kernel/main/0001-ledtrig-sata-mv.patch
+wget https://raw.githubusercontent.com/alf45tar/debian-kernel/main/disable_debug_info.sh
 wget https://raw.githubusercontent.com/alf45tar/debian-kernel/main/crossbuild.sh
 chmod 755 /root/download_latest_bookworm_stable_sec_kernel.sh
+chmod 755 /root/disable_debug_info.sh
 chmod 755 /root/crossbuild.sh
 ./download_latest_bookworm_stable_sec_kernel.sh
 EOF
