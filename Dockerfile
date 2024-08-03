@@ -19,10 +19,12 @@ EOF
 FROM install-dependency AS download
 RUN <<"EOF"
 cd /root
-wget https://deb.debian.org/debian/pool/main/l/linux/linux_6.1.99.orig.tar.xz
+wget https://raw.githubusercontent.com/alf45tar/debian-kernel/main/download_latest_bookworm_stable_sec_kernel.sh
 wget https://raw.githubusercontent.com/alf45tar/debian-kernel/main/0001-ledtrig-sata-mv.patch
-wget https://raw.githubusercontent.com/alf45tar/debian-kernel/main/crossbuild
-chmod 755 /root/crossbuild
+wget https://raw.githubusercontent.com/alf45tar/debian-kernel/main/crossbuild.sh
+chmod 755 /root/download_latest_bookworm_stable_sec_kernel.sh
+chmod 755 /root/crossbuild.sh
+./download_latest_bookworm_stable_sec_kernel.sh
 EOF
 
 FROM download AS clone-git
