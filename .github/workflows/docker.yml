@@ -46,7 +46,7 @@ jobs:
           rm -rf ${{ github.workspace }}/kernel-packages
           mkdir ${{ github.workspace }}/kernel-packages
           docker exec kernel-ix4-300d ls -la /root
-          for file in $(docker exec kernel-ix4-300d sh -c 'ls /root/linux-*.deb'); do
+          for file in $(docker exec kernel-ix4-300d sh -c 'ls /root/linux-*.deb | grep -v dbg'); do
             docker cp kernel-ix4-300d:$file ${{ github.workspace }}/kernel-packages
           done
 
