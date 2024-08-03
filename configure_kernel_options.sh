@@ -1,15 +1,14 @@
 #!/bin/bash
 
 # Kernel configuration file
-CONFIG_FILE="kernel/config/config"
+CONFIG_FILE="debian/config/config"
 
 # Options with their values to set
 # Format: "option=value"
 OPTIONS_WITH_VALUES=(
   "CONFIG_DEBUG_INFO=n"
   "CONFIG_GDB_SCRIPTS=n"
-  "CONFIG_SOMETHING_USEFUL=y"
-  "CONFIG_ANOTHER_OPTION=m"
+  "CONFIG_GPIO_74X164=m"
 )
 
 # Function to add or modify an option in the configuration file
@@ -39,5 +38,3 @@ fi
 for option_value in "${OPTIONS_WITH_VALUES[@]}"; do
   modify_config "$option_value"
 done
-
-echo "Operation completed."
