@@ -32,14 +32,14 @@ jobs:
         run: |
           docker run -it --name kernel-ix4-300d -d bookworm:latest
           sleep 5
-          docker exec kernel-ix4-300d /root/crossbuild
+          docker exec kernel-ix4-300d /root/crossbuild.sh
 
       - name: Retrieve artifact from Docker image
         run: |
           docker exec kernel-ix4-300d ls -la /root
-          mkdir ${{ github.workspace }}/${{ github.event.inputs.tag }}
+          mkdir ${{ github.workspace }}/kernel/${{ github.event.inputs.tag }}
           for file in $(docker exec kernel-ix4-300d sh -c 'ls /root/linux-*.deb'); do
-            docker cp kernel-ix4-300d:$file ${{ github.workspace }}/${{ github.event.inputs.tag }}
+            docker cp kernel-ix4-300d:$file ${{ github.workspace }}/kernel/${{ github.event.inputs.tag }}
           done
 
       - name: Commit and push kernel ${{ github.event.inputs.tag }} files
@@ -62,5 +62,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: lenovo-ix4-300d-debian-bookworm-kernel
-          path: ${{ github.workspace }}/${{ github.event.inputs.tag }}/linux-*.deb
-
+          path: ${{ github.workspace }}/kernel/${{ github.event.inputs.tag }}/linux-*.deb
