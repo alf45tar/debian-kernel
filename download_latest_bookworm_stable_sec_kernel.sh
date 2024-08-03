@@ -2,8 +2,8 @@
 
 # Function to get the latest stable-sec kernel version for Bookworm
 get_latest_bookworm_stable_sec_kernel_version() {
-  wget -qO- https://deb.debian.org/debian-security/dists/bookworm-security/main/source/Sources.gz | \
-  gunzip | \
+  wget -qO- https://deb.debian.org/debian-security/dists/bookworm-security/main/source/Sources.xz | \
+  unxz | \
   awk '/^Package: linux$/,/^$/ {if ($1 == "Version:") print $2}' | \
   grep -E '^[0-9]+\.[0-9]+\.[0-9]+-[0-9]+$' | \
   sort -V | tail -1 | \
