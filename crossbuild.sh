@@ -29,7 +29,7 @@ fakeroot make -f debian/rules orig
 ../configure_kernel_options.sh
 
 # Patch the kernel
-patch -p1 < ../0001-ledtrig-sata-mv.patch
+# patch -p1 < ../0001-ledtrig-sata-mv.patch
 
 # Prepare the source package for a Debian package
 fakeroot make -f debian/rules source
